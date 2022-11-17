@@ -1,0 +1,41 @@
+name: Workflow to update the transform s3 library package.
+on:
+  push:
+    branches:
+      - change this
+jobs:
+  deploy-lambda:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twine
+      - name: Assume AWS role
+      - uses: aws-actions/setup-sam@v1
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.ROLE_ARN }}
+          aws-region: ${{ secrets.REGION }}
+          role-session-name: InternalGitHubActionsRoleName
+      - name: Build and publish
+        run: |
+          export TWINE_USERNAME=aws
+          export TWINE_PASSWORD=`aws codeartifact get-authorization-token --domain ${{ secrets.DOMAIN }} --domain-owner ${{ secrets.MANAGEMENT_ARN_NUMBER }} --region eu-west-2 --query authorizationToken --output text`
+          export TWINE_REPOSITORY_URL=`aws codeartifact get-repository-endpoint --domain ${{ secrets.DOMAIN }} --domain-owner ${{ secrets.MANAGEMENT_ARN_NUMBER }} --repository ${{ secrets.REPOSITORY }} --region ${{ secrets.REGION }} --format pypi --query repositoryEndpoint --output text`          
+          python setup.py sdist bdist_wheel --verbose
+          twine upload dist/*
+      #- name: Smoke test # These are commented out because this step will fail on the first run.
+      #  run:
+      #    aws codeartifact login --tool pip --repository ${{ secrets.REPOSITORY }} --domain ${{ secrets.DOMAIN }} --domain-owner ${{ secrets.MANAGEMENT_ARN_NUMBER }} --region ${{ secrets.REGION }}
+      #    pip install s3lib
+

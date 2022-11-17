@@ -1,3 +1,10 @@
-# da-transform-s3-library
+# s3_lib
 
-A repository to store the common S3 methods used in TNA transformation engine
+Common Python s3 API for lambda functions.
+
+To build:
+
+1. Ensure the version is set correctly in [`version.sh`](./version.sh)
+2. Run [`./build.sh`](./build.sh)
+
+Build output file (type `whl`) is created in the `./dist/` folder.
