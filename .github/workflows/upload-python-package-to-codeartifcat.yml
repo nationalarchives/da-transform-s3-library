@@ -2,7 +2,7 @@ name: Workflow to update the transform s3 library package.
 on:
   push:
     branches:
-      - feature/DTE-466_deploy_tre_lib_to_code_artifactory
+      - main
 jobs:
   deploy-lambda:
     runs-on: ubuntu-latest
