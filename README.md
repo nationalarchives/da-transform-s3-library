@@ -27,4 +27,4 @@ export CODEARTIFACT_AUTH_TOKEN=`aws aws codeartifact get-authorization-token --d
 
 pip config set global.index-url https://aws:$CODEARTIFACT_AUTH_TOKEN@${DOMAIN}-${ARN_NUMBER}.d.codeartifact.eu-west-2.amazonaws.com/pypi/${REPOSITORY}/simple/
 
-pip install s3lib
+pip install s3-lib
